@@ -17,11 +17,16 @@
        </p>
    </aside>
 
-<!-- START HERE -->
-   <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-   <!-- Style The Contact Form How Ever You Prefer -->
-   <link rel="stylesheet" href="style.css">
+  <!-- START HERE -->
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!-- Style The Contact Form How Ever You Prefer -->
+  <link rel="stylesheet" href="style.css">
 
   <form class="gform pure-form pure-form-stacked" id="frmContactUs" method="POST"
     data-email="example@email.net">
@@ -57,16 +62,38 @@
     <!-- Customise the Thankyou Message People See when they submit the form: -->
     <div class="thankyou_message" style="display:none;">
       <h2><em>Thanks</em> for contacting us!
-        We will get back to you soon!</h2><br/>
-        <input type="button" value="Back" onClick="window.location.reload(true)">
+        We will get back to you soon!</h2>
     </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+      
   </form>
 
   <!-- Submit the Form to Google Using "AJAX" --> 
   <script data-cfasync="false" src="sendmailutil.js"></script>
+  <script data-cfasync="false" src="masterDataUtil.js"></script>
   <script data-cfasync="false" src="form-submission-handler.js"></script>
 <!-- END -->
+
 
 </body>
 </html>
