@@ -1,5 +1,6 @@
-(function(_mailUtil) {
+(function(_mailUtil, _masterDataUtil) {
   var mailUtil = _mailUtil();
+  var masterDataUtil = _masterDataUtil();
 
   // get all data in form and return object
   function getFormData(form) {
@@ -91,6 +92,11 @@
     console.log('Error sending mail!', err);
   }
 
+  function loadModalData()
+  {
+    masterDataUtil.LoadData();
+  } 
+
   function loaded() {
 
     mailUtil.Initialize();
@@ -100,6 +106,12 @@
     for (var i = 0; i < forms.length; i++) {
       forms[i].addEventListener("submit", handleFormSubmit, false);
     }
+
+    var emailInput = document.getElementById('email');
+
+    emailInput.addEventListener('focusout', (event) => { 
+      loadModalData();     
+    });
 
   };
 
@@ -111,4 +123,4 @@
       buttons[i].disabled = true;
     }
   }
-})(mailUtil);
+})(mailUtil, masterDataUtil);
