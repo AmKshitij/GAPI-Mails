@@ -48,6 +48,8 @@
         <label for="email"><em>Your</em> Email Address:</label>
         <input id="email" name="email" type="email" value=""
         required placeholder="your.name@email.com"/>
+        <button id="btnEditMasterData" class="btn btn-default" style="float: none;">
+          <i class="glyphicon glyphicon-pencil"></i> Edit</button>
       </fieldset>
 
       <fieldset class="pure-group honeypot-field">
@@ -55,33 +57,37 @@
         <input id="honeypot" type="text" name="honeypot" value="" />
       </fieldset>
 
-      <button class="button-success pure-button button-xlarge">
+      <button class="button-success pure-button button-xlarge" style="float: right;">
         <i class="fa fa-paper-plane"></i>&nbsp;Send</button>
     </div>
 
     <!-- Customise the Thankyou Message People See when they submit the form: -->
     <div class="thankyou_message" style="display:none;">
       <h2><em>Thanks</em> for contacting us!
-        We will get back to you soon!</h2>
+        We will get back to you soon!</h2><br/>
+        <input type="button" value="Back" class="btn" onClick="window.location.reload(true)">
     </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
+  <div class="modal fade" id="myModal" role="dialog" style="text-align: center">
     <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
+          
+        <!-- Modal content-->
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Modal Header</h4>
+          </div>
+          <div class="modal-body">
+            <p>Some text in the modal.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id="btnSaveData" class="btn btn-success mr-1" >Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+
         </div>
-        <div class="modal-body">
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
       
     </div>
   </div>
