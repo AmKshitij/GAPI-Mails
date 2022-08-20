@@ -70,8 +70,12 @@
       return false;
     }
 
-    disableAllButtons(form);
-    mailUtil.SendMail(data, success, failure);
+    //disableAllButtons(form);
+
+    var enteredEmail = document.getElementById('email').value;
+    masterDataUtil.LoadData(enteredEmail, true).then((entry) => {
+      if(entry) mailUtil.SendMail(data, success, failure);
+    })
 
   }
 
@@ -92,10 +96,28 @@
     console.log('Error sending mail!', err);
   }
 
-  function loadModalData()
+  function loadModalData(e)
   {
-    masterDataUtil.LoadData();
+    e.preventDefault();
+    var enteredEmail = document.getElementById('email').value;
+    masterDataUtil.LoadData(enteredEmail, false);
   } 
+
+  function handlePopupFormSubmit(event) { 
+    event.preventDefault();
+
+    var divElem = document.querySelector(".modal-body");
+    var inputElements = divElem.querySelectorAll("input");
+    var dataObj = {};
+    
+    for (var i = 0; i < inputElements.length; i++) {
+      dataObj[inputElements[i].id] = inputElements[i].value;
+    }
+    masterDataUtil.SaveMasterData(dataObj);
+
+    var emailInput = document.getElementById('btnSaveData');
+    emailInput.removeEventListener("click", handlePopupFormSubmit);
+  }
 
   function loaded() {
 
@@ -105,12 +127,22 @@
     var forms = document.querySelectorAll("form.gform");
     for (var i = 0; i < forms.length; i++) {
       forms[i].addEventListener("submit", handleFormSubmit, false);
-    }
+    } 
 
-    var emailInput = document.getElementById('email');
+    $('#myModal').on('show.bs.modal', function (event) {
+      var emailInput = document.getElementById('btnSaveData');
 
-    emailInput.addEventListener('focusout', (event) => { 
-      loadModalData();     
+      if(!emailInput.onclick){
+        emailInput.onclick = function(event){
+          handlePopupFormSubmit(event); 
+        }
+      }   
+    });
+
+    var editInput = document.getElementById('btnEditMasterData');
+
+    editInput.addEventListener('click', (event) => { 
+      loadModalData(event);     
     });
 
   };
