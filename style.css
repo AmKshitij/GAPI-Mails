@@ -29,15 +29,15 @@ textarea {
 .button-xlarge {
   font-size: 125%;
 }
-button {
-  float: right;
-}
+
 #name, #email {
   width: 50%;
 }
 .honeypot-field {
   display: none;
 }
+
+
 td, th {
   border: 1px solid #ddd;
   padding: 8px;
@@ -54,3 +54,24 @@ th {
   background-color: #04AA6D;
   color: white;
 }
+
+        /* Styling modal */
+        .modal:before {
+          content: '';
+          display: inline-block;
+          height: 100%;
+          vertical-align: middle;
+      }
+        
+      .modal-dialog {
+          display: inline-block;
+          vertical-align: middle;
+      }
+
+      .modal .modal-content {
+          padding: 20px 20px 20px 20px;
+          -webkit-animation-name: modal-animation;
+          -webkit-animation-duration: 0.5s;
+          animation-name: modal-animation;
+          animation-duration: 0.5s;
+      }
