@@ -1,17 +1,23 @@
 var masterDataUtil = function() {
-
-    //var CONFIG_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyr368ryiTE_WjgPX_o2pYpY1_RhnZYL5aQ46uBjJjjXk0MxdIu9Cnw-_gLfsu-cDQ/exec';
+    var MASTERDATA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlCQu7Q3q50JhlH6uASDgFEW2lMxgGG8cRujl1CONAY_c6ExpV9TckVvapE4zQBIi0/exec";
     var sheetId = '1w3ijJ8cAoJRLDgezX5hX6mGyz7BTGYhX2maFHOwSbLU';
     var base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
     var sheetName = 'Sheet1';
     var query = encodeURIComponent('Select *')
     var url = `${base}&sheet=${sheetName}&tq=${query}`
 
+    var SEARCH_COL = "Email";
     var MASTER_DATA = [];
+    var EXISTING_DATA_INDEX = 0;
 
-    function loadData()
+    function loadData(enteredSearchText, isSendMail)
     {
         MASTER_DATA=[];
+        EXISTING_DATA_INDEX = 0;
+
+        isMasterDataExists = false;
+
+        return new Promise((resolve, reject) => {
 
         fetch(url)
         .then(res => res.text())
@@ -37,66 +43,106 @@ var masterDataUtil = function() {
                 MASTER_DATA.push(row);
             });
 
-            console.log(MASTER_DATA);
-            var tblContent = modalBody(MASTER_DATA);
+            var foundEntry = MASTER_DATA.find(el => el[SEARCH_COL] === enteredSearchText);
+            EXISTING_DATA_INDEX = MASTER_DATA.findIndex(el => el[SEARCH_COL] === enteredSearchText) + 1;
+
+            const obj = {};
+
+            for (const key of colz) {                
+                obj[key] = (key === SEARCH_COL) ? enteredSearchText : "";
+            }
 
             var mymodal = $('#myModal');
-            //mymodal.find('.modal-body').text(tblContent);
-            mymodal.find('.modal-body').html(tblContent);
-            mymodal.modal('show');
+            if(!isSendMail)
+            {
+                var tblContent = modalBody(foundEntry || obj);
+                mymodal.find('.modal-body').html(tblContent);
+                mymodal.modal('show');
+            }else{
+                if(!foundEntry){
+                    var tblContent = modalBody(obj);
+                    mymodal.find('.modal-body').html(tblContent);
+                    mymodal.modal('show');
+                    isMasterDataExists = false; 
+                }else{
+                    isMasterDataExists = true;
+                }
+            }         
+            resolve(isMasterDataExists);
 
         })
         .catch(err => {
           console.log('Error occured while populating config data from google spreadsheet', err);
+          reject(true);
         })
 
+    });
+        
     }
+
+    function saveMasterData(formData){
+
+        var data = formData;
+        var url =  MASTERDATA_SCRIPT_URL; 
+        data.rowIndex = EXISTING_DATA_INDEX;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        // xhr.withCredentials = true;
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              console.log('Master data is saved into spreadsheet!')
+            }
+        };
+
+        xhr.onerror = function(error){
+          console.log('Error!', error);
+        }
+
+        xhr.onloadend = function() {
+          if(xhr.status == 404) 
+              console.log(new Error(url + ' replied 404'));
+        }
+
+        // url encode form data for sending as post data
+        var encoded = Object.keys(data).map(function(k) {
+            return encodeURIComponent(k) + "=" + encodeURIComponent(data[k]);
+        }).join('&');
+        xhr.send(encoded);
+  }    
 
     function modalBody(array)
     {
-        var table = document.createElement('table');
-        var tr = document.createElement('tr');
-        var arrheader = ['Username', 'Email', 'Phone', 'GST'];
+        var table = document.createElement('table');        
 
+        for (const objProp of Object.entries(array)) {
+            var tr = document.createElement('tr');
+            var td1 = document.createElement('td');
+            var td2 = document.createElement('td');
 
-        for (var j = 0; j < arrheader.length; j++) {
-        var th = document.createElement('th'); //column
-        var text = document.createTextNode(arrheader[j]); //cell
-        th.appendChild(text);
-        tr.appendChild(th);
+            var labelControl = document.createTextNode(objProp[0]);
+       
+            var textControl = document.createElement("input");
+            textControl.type = "text";
+            textControl.id = objProp[0];
+            textControl.value = objProp[1];
+            textControl.className = "css-class-name";
+
+            td1.appendChild(labelControl);
+            td2.appendChild(textControl);    
+    
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            
+            table.appendChild(tr);
         }
-        table.appendChild(tr);
 
-        for (var i = 0; i < array.length; i++) {
-        var tr = document.createElement('tr');
-
-        var td1 = document.createElement('td');
-        var td2 = document.createElement('td');
-        var td3 = document.createElement('td');
-        var td4 = document.createElement('td');
-
-        var text1 = document.createTextNode(array[i].Username);
-        var text2 = document.createTextNode(array[i].Email);
-        var text3 = document.createTextNode(array[i].Phone);
-        var text4 = document.createTextNode(array[i].GST);
-
-        td1.appendChild(text1);
-        td2.appendChild(text2);
-        td3.appendChild(text3);
-        td4.appendChild(text4);
-
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        tr.appendChild(td4);
-
-        table.appendChild(tr);
-        }
         return table;
     }
 
     return function(){
-        return { LoadData: loadData }
+        return { LoadData: loadData, SaveMasterData: saveMasterData }
     }
 
 }();
