@@ -2,6 +2,8 @@
   var mailUtil = _mailUtil();
   var masterDataUtil = _masterDataUtil();
 
+  var fieldValidation = {};
+
   // get all data in form and return object
   function getFormData(form) {
     var elements = form.elements;
@@ -73,8 +75,16 @@
     //disableAllButtons(form);
 
     var enteredEmail = document.getElementById('email').value;
-    masterDataUtil.LoadData(enteredEmail, true).then((entry) => {
-      if(entry) mailUtil.SendMail(data, success, failure);
+    masterDataUtil.LoadData(enteredEmail).then((result) => {
+      if(result.Exists) {
+        console.log('Sent!');
+        //un comment below to send mail
+        mailUtil.SendMail(data, success, failure);
+      }else{
+        var tblContent = modalBody(result.ModalFields);
+        $('#myModal').find('.modal-body').html(tblContent);
+        $('#myModal').modal('show'); 
+      }
     })
 
   }
@@ -98,22 +108,113 @@
 
   function loadModalData(e)
   {
-    e.preventDefault();
-    var enteredEmail = document.getElementById('email').value;
-    masterDataUtil.LoadData(enteredEmail, false);
+    document.getElementById('lblValidationSummary').innerHTML = '';
+    document.getElementById('lblMsg').innerHTML ='';
+
+    var enteredTxt = document.getElementById('email').value;
+    //var mailformat = /^\w+([\.-]?\w+)*[@gmail.com]*(\.\w{2,3})+$/;
+    //var phoneformat = /^([0-9]{10})+$/;
+    var mail_phone_regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})|([0-9]{10})+$/;
+
+    if(!enteredTxt.match(mail_phone_regex)){
+      alert('Please enter valid email / phone number');
+      return;
+    }
+
+    if(enteredTxt){
+      document.getElementById('lblMsg').innerHTML = "";
+      e.preventDefault();    
+
+      masterDataUtil.LoadFieldConfigInfo().then((fieldConfig) => {
+        masterDataUtil.LoadData(enteredTxt).then((result) => {
+          fieldValidation = fieldConfig;
+          var tblContent = modalBody(result.ModalFields, fieldConfig);
+          $('#myModal').find('.modal-body').html(tblContent);
+          $('#myModal').modal('show');        
+        });
+      })
+    }else{
+      alert('Please enter email address');
+    }
   } 
 
+  function modalBody(dataObjct, fieldConfigArray)
+  {
+      var mailPattern = /^\w+([\.-]?\w+)*[@gmail.com]*(\.\w{2,3})+$/;
+      var table = document.createElement('table');        
+
+      for (const objProp of Object.entries(dataObjct)) {
+          if(objProp[0] !== "rowIndex"){
+              var tr = document.createElement('tr');
+              var td1 = document.createElement('td');
+              var td2 = document.createElement('td');
+  
+              var labelControl = document.createTextNode(objProp[0]);
+         
+              var textControl = document.createElement("input");
+              textControl.type = "text";
+              textControl.id = objProp[0];
+              textControl.value = objProp[1];
+
+              if(objProp[0] === "Email")
+                textControl.setAttribute('pattern', mailPattern);
+
+              textControl.className = "css-class-name";
+  
+              td1.appendChild(labelControl);
+              td2.appendChild(textControl);    
+      
+              tr.appendChild(td1);
+              tr.appendChild(td2);
+              
+              table.appendChild(tr);
+          }
+
+      }
+
+      return table;
+  }
+
   function handlePopupFormSubmit(event) { 
+    var lblMsg = document.getElementById('lblMsg');
+    var lblValSummary = document.getElementById('lblValidationSummary');
+    lblMsg.innerHTML = 'Validating inputs...';
+    lblValSummary.innerHTML = '';
+
     event.preventDefault();
 
     var divElem = document.querySelector(".modal-body");
     var inputElements = divElem.querySelectorAll("input");
     var dataObj = {};
-    
+    var isFormValid = true;
+    var validationMsg = '';
     for (var i = 0; i < inputElements.length; i++) {
+
+      var field = fieldValidation.FieldConfigData.find(f =>  f.FieldName === inputElements[i].id);
+      
+      if(!new RegExp(field.Pattern).test(inputElements[i].value)){
+        isFormValid = false;
+        validationMsg += field.FieldName + ": " + field.ValidationMessage + '<br/>';
+      } 
+
       dataObj[inputElements[i].id] = inputElements[i].value;
     }
-    masterDataUtil.SaveMasterData(dataObj);
+    
+    
+    if(isFormValid)
+    {
+      masterDataUtil.SaveMasterData(dataObj).then((resp)=> {
+          lblMsg.innerHTML = "Master Data Saved!";
+          lblMsg.style.color = "green";
+      }).catch((err)=>{
+        lblMsg.innerHTML = "Error Occured!";
+        lblMsg.style.color = "red";
+      });
+    }else{
+      lblMsg.innerHTML = "Please provide valid input!";
+      lblMsg.style.color = "red";
+      lblValSummary.innerHTML = validationMsg;
+    }
 
     var emailInput = document.getElementById('btnSaveData');
     emailInput.removeEventListener("click", handlePopupFormSubmit);
