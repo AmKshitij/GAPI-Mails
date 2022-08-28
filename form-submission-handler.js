@@ -75,17 +75,21 @@
     //disableAllButtons(form);
 
     var enteredEmail = document.getElementById('email').value;
-    masterDataUtil.LoadData(enteredEmail).then((result) => {
-      if(result.Exists) {
-        console.log('Sent!');
-        //un comment below to send mail
-        mailUtil.SendMail(data, success, failure);
-      }else{
-        var tblContent = modalBody(result.ModalFields);
-        $('#myModal').find('.modal-body').html(tblContent);
-        $('#myModal').modal('show'); 
-      }
-    })
+
+    masterDataUtil.LoadFieldConfigInfo().then((fieldConfig) => {    
+      masterDataUtil.LoadData(enteredEmail).then((result) => {
+        if(result.Exists) {
+          console.log('Sent!');
+          //un-comment below to send mail
+          mailUtil.SendMail(data, success, failure);
+        }else{
+          fieldValidation = fieldConfig;
+          var tblContent = modalBody(result.ModalFields, fieldValidation);
+          $('#myModal').find('.modal-body').html(tblContent);
+          $('#myModal').modal('show'); 
+        }
+      });
+    });
 
   }
 
@@ -112,8 +116,6 @@
     document.getElementById('lblMsg').innerHTML ='';
 
     var enteredTxt = document.getElementById('email').value;
-    //var mailformat = /^\w+([\.-]?\w+)*[@gmail.com]*(\.\w{2,3})+$/;
-    //var phoneformat = /^([0-9]{10})+$/;
     var mail_phone_regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})|([0-9]{10})+$/;
 
     if(!enteredTxt.match(mail_phone_regex)){
@@ -148,17 +150,19 @@
               var td1 = document.createElement('td');
               var td2 = document.createElement('td');
   
-              var labelControl = document.createTextNode(objProp[0]);
-              var field = fieldConfigArray.FieldConfigData.find(f =>  f.FieldName === objProp[0]);
-
+              var labelControl = document.createTextNode(objProp[0]);             
               var htmlControl = document.createElement("input");
               htmlControl.id = objProp[0];
               htmlControl.value = objProp[1];
 
-              htmlControl.type = field.FieldType;
-              htmlControl.placeholder = field.PlaceHolder;
-              htmlControl.required = (field.IsRequired.toUpperCase() === "YES") ? true : false;
-              //htmlControl.className = "css-class-name";
+              if(fieldConfigArray){
+                var field = fieldConfigArray.FieldConfigData.find(f =>  f.FieldName === objProp[0]);
+
+                htmlControl.type = field.FieldType;
+                htmlControl.placeholder = field.PlaceHolder;
+                htmlControl.required = (field.IsRequired.toUpperCase() === "YES") ? true : false;
+                //htmlControl.className = "css-class-name";
+              }
   
               td1.appendChild(labelControl);
               td2.appendChild(htmlControl);    
@@ -180,8 +184,6 @@
     lblMsg.innerHTML = 'Validating inputs...';
     lblValSummary.innerHTML = '';
 
-    
-
     var divElem = document.querySelector(".modal-body");
     var inputElements = divElem.querySelectorAll("input");
     var dataObj = {};
@@ -198,8 +200,7 @@
 
       dataObj[inputElements[i].id] = inputElements[i].value;
     }
-    
-    
+  
     if(isFormValid)
     {
       masterDataUtil.SaveMasterData(dataObj).then((resp)=> {
@@ -217,7 +218,7 @@
 
     var emailInput = document.getElementById('btnSaveData');
     emailInput.removeEventListener("click", handlePopupFormSubmit);
-    
+    //event.stopPropagation();
   }
 
   function loaded() {
