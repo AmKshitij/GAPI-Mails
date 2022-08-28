@@ -184,24 +184,42 @@
     lblMsg.innerHTML = 'Validating inputs...';
     lblValSummary.innerHTML = '';
 
+    event.preventDefault();
+
     var divElem = document.querySelector(".modal-body");
     var inputElements = divElem.querySelectorAll("input");
     var dataObj = {};
     var isFormValid = true;
     var validationMsg = '';
+    var isAnyValid = false;
+
     for (var i = 0; i < inputElements.length; i++) {
 
       var field = fieldValidation.FieldConfigData.find(f =>  f.FieldName === inputElements[i].id);
       
-      if(!new RegExp(field.Pattern).test(inputElements[i].value)){
+      if((field.IsRequired.toUpperCase() === "YES") && !(new RegExp(field.Pattern).test(inputElements[i].value))){
         isFormValid = false;
         validationMsg += field.FieldName + ": " + field.ValidationMessage + '<br/>';
+      }else if((field.IsRequired.toUpperCase() === "NO")){
+        if(inputElements[i].value && !(new RegExp(field.Pattern).test(inputElements[i].value))){
+          isFormValid = false;
+          validationMsg += field.FieldName + ": " + field.ValidationMessage + '<br/>';
+        }
+      }else if((field.IsRequired.toUpperCase() === "OPTIONAL")){  // email or phone        
+        if(inputElements[i].value){
+          if((new RegExp(field.Pattern).test(inputElements[i].value))){
+            isAnyValid = true;
+          }else{
+            isFormValid = false;
+            validationMsg += field.FieldName + ": " + field.ValidationMessage + '<br/>';
+          }
+        }         
       } 
 
       dataObj[inputElements[i].id] = inputElements[i].value;
     }
   
-    if(isFormValid)
+    if(isFormValid && isAnyValid)
     {
       masterDataUtil.SaveMasterData(dataObj).then((resp)=> {
           lblMsg.innerHTML = "Master Data Saved!";
@@ -240,7 +258,7 @@
         emailInput.onclick = function(event){
           
           handlePopupFormSubmit(event); 
-          event.preventDefault();
+          
         }
       }   
     });
