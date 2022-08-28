@@ -79,7 +79,7 @@
       if(result.Exists) {
         console.log('Sent!');
         //un comment below to send mail
-        //mailUtil.SendMail(data, success, failure);
+        mailUtil.SendMail(data, success, failure);
       }else{
         var tblContent = modalBody(result.ModalFields);
         $('#myModal').find('.modal-body').html(tblContent);
