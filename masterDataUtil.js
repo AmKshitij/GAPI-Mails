@@ -1,6 +1,6 @@
 var masterDataUtil = function() {
     
-    var MASTERDATA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzre2wasXhwPHLO_rvO5CjPc1heG5H_wpQlUi3yhocbyRE-qmW6ejlkIQ_fCf5xl-56/exec";
+    var MASTERDATA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRH7UQCkWLlxXBaHiFDd9tyDzivWpekQfOEqkwuo6c5i_TFZqCTJI807BUlxVRlnB6/exec";
     var sheetId = '1w3ijJ8cAoJRLDgezX5hX6mGyz7BTGYhX2maFHOwSbLU';
     var base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
     var dataSheetName = 'Sheet1';
@@ -141,7 +141,7 @@ var masterDataUtil = function() {
 
             xhr.onerror = function(error){
             console.log('Error!', error);
-            debugger;
+            //debugger;
             reject(error);
             }
 
