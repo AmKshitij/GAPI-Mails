@@ -1,6 +1,6 @@
 var masterDataUtil = function() {
     
-    var MASTERDATA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlCQu7Q3q50JhlH6uASDgFEW2lMxgGG8cRujl1CONAY_c6ExpV9TckVvapE4zQBIi0/exec";
+    var MASTERDATA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzre2wasXhwPHLO_rvO5CjPc1heG5H_wpQlUi3yhocbyRE-qmW6ejlkIQ_fCf5xl-56/exec";
     var sheetId = '1w3ijJ8cAoJRLDgezX5hX6mGyz7BTGYhX2maFHOwSbLU';
     var base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
     var dataSheetName = 'Sheet1';
@@ -134,12 +134,14 @@ var masterDataUtil = function() {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                 console.log('Master data is saved into spreadsheet!');
+                debugger;
                 resolve(true);
                 }
             };
 
             xhr.onerror = function(error){
             console.log('Error!', error);
+            debugger;
             reject(error);
             }
 
