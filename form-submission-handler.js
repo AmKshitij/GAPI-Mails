@@ -90,7 +90,6 @@
         }
       });
     });
-
   }
 
   function success(event){
@@ -178,7 +177,8 @@
       return table;
   }
 
-  function handlePopupFormSubmit(event) { 
+  function handlePopupFormSubmit(event) {
+
     var lblMsg = document.getElementById('lblMsg');
     var lblValSummary = document.getElementById('lblValidationSummary');
     lblMsg.innerHTML = 'Validating inputs...';
@@ -222,8 +222,20 @@
     if(isFormValid && isAnyValid)
     {
       masterDataUtil.SaveMasterData(dataObj).then((resp)=> {
-          lblMsg.innerHTML = "Master Data Saved!";
+          lblMsg.innerHTML = "Master Data Saved! Sending Mail...";
           lblMsg.style.color = "green";
+
+          setTimeout(function(){
+
+            var form = document.querySelectorAll("form.gform")[0]; 
+            var formData = getFormData(form);
+            var data = formData.data;
+            $('#myModal').modal('hide');
+            mailUtil.SendMail(data, success, failure);
+
+          }, 5000);
+
+
       }).catch((err)=>{
         lblMsg.innerHTML = "CORS Error Occured!";
         lblMsg.style.color = "red";
