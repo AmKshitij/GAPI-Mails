@@ -1,7 +1,7 @@
 var mailUtil = function() {
   
   // Script level variables to form Script URL of google spredsheet - Config Data
-  var CONFIG_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzH6wnf98L4Y7wvEizKa9cY5y_ziG4HtapyIlmK66WTiawhSfyxTKHG1TWdT0fyKzlk/exec';
+  var CONFIG_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxc9363GmUYxQMU-35Wpf6myHVIEbUPP0Dc-Z06tFFPShMQ4jnx2s6l3pNoBfG4JNSa/exec';
   var sheetId = '1oVXpShqB2GoZD52VM-q-TcnSAlvHAnil-pONy9XlG80';
   var base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
   var sheetName = 'scriptUrls';   // sheetname inside 'ConfigData' spreadsheet
