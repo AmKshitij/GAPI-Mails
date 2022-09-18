@@ -4,7 +4,7 @@ var masterDataUtil = function() {
     var sheetId = '1w3ijJ8cAoJRLDgezX5hX6mGyz7BTGYhX2maFHOwSbLU';
     var base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`;
     var dataSheetName = 'Sheet1';
-    var configSheetName = 'Sheet3';
+    var configSheetName = 'Sheet2';
     var query = encodeURIComponent('Select *')
     var dataUrl = `${base}&sheet=${dataSheetName}&tq=${query}`
     var configUrl = `${base}&sheet=${configSheetName}&tq=${query}`
@@ -134,13 +134,13 @@ var masterDataUtil = function() {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                 console.log('Master data is saved into spreadsheet!');
+                debugger;
                 resolve(true);
                 }
             };
 
             xhr.onerror = function(error){
             console.log('Error!', error);
-            //debugger;
             reject(error);
             }
 
