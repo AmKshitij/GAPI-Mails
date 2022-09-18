@@ -191,7 +191,7 @@
     var dataObj = {};
     var isFormValid = true;
     var validationMsg = '';
-    var isAnyValid = false;
+    var isAnyValid = true;  // make it FALSE if there is any OPTIOAL field on form
 
     for (var i = 0; i < inputElements.length; i++) {
 
@@ -229,7 +229,14 @@
 
             var form = document.querySelectorAll("form.gform")[0]; 
             var formData = getFormData(form);
-            var data = formData.data;
+
+            var popupFields = Object.keys(dataObj).filter(function(item) { return item !== "rowIndex"});
+
+            formData.data.formDataNameOrder = 
+            JSON.stringify((JSON.parse(formData.data.formDataNameOrder)).concat(popupFields))
+
+            var data = { ...dataObj, ...formData.data };           
+            
             $('#myModal').modal('hide');
             mailUtil.SendMail(data, success, failure);
 
